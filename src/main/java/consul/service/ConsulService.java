@@ -63,18 +63,21 @@ import java.util.Optional;
 
 public final class ConsulService {
 	private static final String CONSUL_HEALTH_CHECK_API_ENDPOINT_TEMPLATE =
-			"http://localhost:%d/v1/health/service/%s?%s";
+			"http://%s:%d/v1/health/service/%s?%s";
 
-	private final int consulAgentLocalWebServicePort;
+	private final int consulAgentPort;
+	private final String consulAgentHost;
 	private final String tag;
 
 	/**
+     * @param consulHost hostname or ip of consul agent, by default it is localhost
 	 * @param consulPort port where the consul agent on node exposes HTTP API, by default
 	 *                   it is 8500
 	 * @param tag        if not null it will filter query on the tags
 	 */
-	public ConsulService(final int consulPort, final String tag) {
-		this.consulAgentLocalWebServicePort = consulPort;
+	public ConsulService(final String consulHost, final int consulPort, final String tag) {
+		this.consulAgentPort = consulPort;
+		this.consulAgentHost = consulHost;
 		this.tag = tag;
 	}
 
@@ -122,7 +125,7 @@ public final class ConsulService {
 			queryParam.append(tag.trim());
 		}
 		return String.format(CONSUL_HEALTH_CHECK_API_ENDPOINT_TEMPLATE,
-				consulAgentLocalWebServicePort, serviceName,
+				consulAgentHost, consulAgentPort, serviceName,
 				queryParam.toString());
 	}
 }
